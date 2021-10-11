@@ -5,8 +5,8 @@ Code for the paper: ["ActiveMatch: End-to-end Semi-supervised Active Representat
 ## Requirements
 
 -   python 3.8
--   torch 1.8.1
--   torchvision
+-   torch 1.7.1
+-   torchvision 0.5.0+
 -   tensorboard
 -   tqdm
 -   apex (optional)
