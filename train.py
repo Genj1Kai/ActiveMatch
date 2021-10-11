@@ -74,7 +74,7 @@ def main():
     parser.add_argument('--dataset', default='cifar10', type=str,
                         choices=['cifar10', 'cifar100'],
                         help='dataset name')
-    parser.add_argument('--num-labeled', type=int, default=4000,
+    parser.add_argument('--num-labeled', type=int, default=40,
                         help='number of labeled data')
     parser.add_argument("--expand-labels", action="store_true",
                         help="expand labels to fit eval steps")
@@ -127,9 +127,9 @@ def main():
                         help="For distributed training: local_rank")
     parser.add_argument('--no-progress', action='store_true',
                         help="don't use progress bar")
-    parser.add_argument('--stop-active', type=int, default=250,
+    parser.add_argument('--stop-active', type=int, default=200,
                         help="the number of labeled data after active learnging")
-    parser.add_argument('--num-sample', type=int, default=16,
+    parser.add_argument('--num-sample', type=int, default=32,
                         help="the number of batches per sampling")
     parser.add_argument('--temperature', default=0.07, type=float,
                         help='softmax and classwise contrastive loss temperature (default: 0.07)')
