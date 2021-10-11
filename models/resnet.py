@@ -53,7 +53,7 @@ class MyResNet(nn.Module):
 
     def __init__(self, block=BasicBlock, layers=[2, 2, 2, 2], num_classes = 10, learning = 'cl'):
         self.inplanes = 64
-        super(ResNetSimCLR, self).__init__()
+        super(MyResNet, self).__init__()
         # self.conv1 = nn.Conv2d(3, 64, kernel_size=7, stride=2, padding=3,
         self.conv1 = nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=1,
                                bias=False)

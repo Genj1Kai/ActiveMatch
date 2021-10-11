@@ -120,23 +120,27 @@ def main():
                         help="random seed")
     parser.add_argument("--amp", action="store_true",
                         help="use 16-bit (mixed) precision through NVIDIA apex AMP")
-    parser.add_argument("--opt_level", type=str, default="O1",
+    parser.add_argument("--opt-level", type=str, default="O1",
                         help="apex AMP optimization level selected in ['O0', 'O1', 'O2', and 'O3']."
                         "See details at https://nvidia.github.io/apex/amp.html")
-    parser.add_argument("--local_rank", type=int, default=-1,
+    parser.add_argument("--local-rank", type=int, default=-1,
                         help="For distributed training: local_rank")
     parser.add_argument('--no-progress', action='store_true',
                         help="don't use progress bar")
-    parser.add_argument('--stop_active', type=int, default=250,
+    parser.add_argument('--stop-active', type=int, default=250,
                         help="the number of labeled data after active learnging")
-    parser.add_argument('--num_sample', type=int, default=16,
+    parser.add_argument('--num-sample', type=int, default=16,
                         help="the number of batches per sampling")
     parser.add_argument('--temperature', default=0.07, type=float,
-                        help='softmax temperature (default: 0.07)')
+                        help='softmax and classwise contrastive loss temperature (default: 0.07)')
     parser.add_argument('--n-views', default=2, type=int, metavar='N',
                         help='Number of views for contrastive learning training.')
-    parser.add_argument('--epoch_warmup', type=int, default=10,
-                        help="the epoch for cl to warmup")                    
+    parser.add_argument('--epoch-warmup', type=int, default=10,
+                        help="the epoch for cl to warmup")
+    parser.add_argument('--eps', type=float, default=1e-9,
+                        help="eps for classwise contrastive loss")
+    parser.add_argument('--epoch-preact', type=int, default=5,
+                        help="the epoch after warmup and before active learning")
 
     args = parser.parse_args()
     global best_acc
@@ -368,13 +372,9 @@ def classwise_contrastive_loss(args, features, labels):
     Outputs:
             loss: classwise contrastive loss
     '''
-    # set up two local parameters (should be set to hyperparameters later)
-    eps = 1e-9
-    my_temp = 0.07
-    #print(my_temp)
     # Obtain the similarity matrix
     features = F.normalize(features, dim=1)
-    similarity_matrix = torch.exp(torch.matmul(features, features.T)/my_temp)
+    similarity_matrix = torch.exp(torch.matmul(features, features.T)/args.temperature)
     # Mask the entries on the main diagonal
     mask1 = torch.eye(similarity_matrix.shape[0]).to(args.device)
     similarity_matrix = similarity_matrix * (1-mask1)
@@ -386,7 +386,7 @@ def classwise_contrastive_loss(args, features, labels):
     mask2 = (labels_extend == labels_extend.view(labels_extend.shape[0], -1)).to(args.device)
     similarity_class_sum = torch.sum((similarity_matrix * mask2), dim=1)
     # Obtain the final loss
-    loss = torch.sum((-1/(similarity_matrix.shape[0]*torch.sum(mask2, dim=1))) * (torch.log(similarity_class_sum/(similarity_total_sum) + eps)))
+    loss = torch.sum((-1/(similarity_matrix.shape[0]*torch.sum(mask2, dim=1))) * (torch.log(similarity_class_sum/(similarity_total_sum) + args.eps)))
     return loss
 
 
@@ -502,7 +502,7 @@ def train(args, labeled_trainloader, unlabeled_trainloader, test_loader,
             Lu = (F.cross_entropy(logits_u_s, targets_u,
                                   reduction='none') * mask).mean()
 
-            if epoch >= args.epoch_warmup+5:
+            if epoch >= args.epoch_warmup + args.epoch_preact:
                 if labeled_idxs_org.shape[0] <args.stop_active:
                     get_index, get_diff = uncertainty_margin_al(logits_u_w, global_index)
                     diff_set.append((get_diff, get_index))
