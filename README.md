@@ -2,16 +2,17 @@
 
 Code for the paper: ["ActiveMatch: End-to-end Semi-supervised Active Representation Learning"](https://arxiv.org/abs/2110.02521) by Xinkai Yuan, Zilinghan Li, and Gaoang Wang.
 
-## Requirements
+## Installation
 
--   python 3.8
--   torch 1.7.1
--   torchvision 0.5.0+
--   tensorboard
--   tqdm
--   apex (optional)
+```
+conda env create --name activematch --file environment.yml
+conda activate activematch
+python train.py
+```
+
 
 ## Running
+
 
 ### Example
 
