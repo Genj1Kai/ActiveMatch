@@ -31,12 +31,14 @@ python train.py --dataset cifar100 --num-labeled 200 --batch-size 64 --lr 0.03 -
 ## Citing this work
 
 ```latex
-@misc{yuan2021activematch,
-      title={ActiveMatch: End-to-end Semi-supervised Active Representation Learning}, 
-      author={Xinkai Yuan and Zilinghan Li and Gaoang Wang},
-      year={2021},
-      eprint={2110.02521},
-      archivePrefix={arXiv},
-      primaryClass={cs.CV}
+@INPROCEEDINGS{9898008,
+  author={Yuan, Xinkai and Li, Zilinghan and Wang, Gaoang},
+  booktitle={2022 IEEE International Conference on Image Processing (ICIP)}, 
+  title={ActiveMatch: End-To-End Semi-Supervised Active Representation Learning}, 
+  year={2022},
+  volume={},
+  number={},
+  pages={1136-1140},
+  doi={10.1109/ICIP46576.2022.9898008}
 }
 ```
